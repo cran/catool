@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>catool: Walkthrough</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">catool: Walkthrough</h1>
+
+
+
+<div id="introduction" class="section level2">
+<h2>🔍 Introduction</h2>
+<p>This vignette demonstrates how to use the <code>catool</code> R
+package to calculate fair and transparent overload compensation for
+college instructors, based on institutional course schedules and
+compensation policies.</p>
+<p>The package supports analysis for both individual instructors and
+full teaching schedules using well-defined eligibility and proration
+rules based on enrollment and credit hour thresholds.</p>
+<hr />
+</div>
+<div id="prepare-your-schedule-data" class="section level2">
+<h2>🏫 Prepare Your Schedule Data</h2>
+<p>To use <code>catool</code>, your schedule data must include at
+minimum:</p>
+<ul>
+<li><code>INSTRUCTOR</code>: Instructor name (e.g., “Baker,
+Danielle”)</li>
+<li><code>ENRLD</code>: Enrollment count for each course</li>
+<li><code>HRS</code>: Credit hours for each course</li>
+</ul>
+<p>📂 <strong>Sample input</strong>:</p>
+<p>The <a href="https://raw.githubusercontent.com/dawit3000/catool/master/inst/extdata/schedule.csv"><code>schedule.csv</code></a>
+file from the “inst/extdata” folder provides a realistic example of
+course schedule data used by the package. It includes columns such as
+<code>SUBJ</code>, <code>CRN</code>,
+<code>INSTRUCTOR</code>,<code>DEPARTMENT</code> and <code>COLLEGE</code>
+fields.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>schedule <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="at">INSTRUCTOR =</span> <span class="fu">c</span>(<span class="st">&quot;Lalau-Hitchcock, Diksha&quot;</span>, <span class="st">&quot;Lalau-Hitchcock, Diksha&quot;</span>, <span class="st">&quot;Brown, Cecily&quot;</span>),</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  <span class="at">ENRLD =</span> <span class="fu">c</span>(<span class="dv">12</span>, <span class="dv">7</span>, <span class="dv">4</span>),</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  <span class="at">HRS =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>),</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>)</span></code></pre></div>
+<p>If you have extended data including subject codes, departments,
+colleges, and programs, make sure those columns are labeled as
+<code>SUBJ</code>, <code>DEPARTMENT</code>, <code>COLLEGE</code>, and
+<code>PROGRAM</code> respectively.</p>
+<hr />
+</div>
+<div id="filter-schedules-with-filter_schedule" class="section level2">
+<h2>🔎 Filter Schedules with <code>filter_schedule()</code></h2>
+<p>You can filter a schedule using subject codes, instructor names,
+department, college, or program using pattern matching.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Filter by subject pattern</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">filter_schedule</span>(schedule, <span class="at">subject_pattern =</span> <span class="st">&quot;MATH|CSCI&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># Filter by instructor</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="fu">filter_schedule</span>(schedule, <span class="at">instructor_pattern =</span> <span class="st">&quot;Armbruster|al-Abdul&quot;</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co"># Filter by department</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="fu">filter_schedule</span>(schedule, <span class="at">department_pattern =</span> <span class="st">&quot;Business Administration&quot;</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co"># Filter by college</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="fu">filter_schedule</span>(schedule, <span class="at">college_pattern =</span> <span class="st">&quot;arts&quot;</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co"># Filter by program</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="fu">filter_schedule</span>(schedule, <span class="at">program_pattern =</span> <span class="st">&quot;computation&quot;</span>)</span></code></pre></div>
+<hr />
+</div>
+<div id="analyze-one-instructor" class="section level2">
+<h2>👤 Analyze One Instructor</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Filter by instructor name (case-insensitive)</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>inst_schedule <span class="ot">&lt;-</span> <span class="fu">get_instructor_schedule</span>(<span class="st">&quot;Lalau-Hitchcock&quot;</span>, schedule)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># Calculate overload compensation using default policy</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="fu">ol_comp</span>(inst_schedule)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co"># You can also apply custom policy parameters</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="fu">ol_comp</span>(inst_schedule, <span class="at">L =</span> <span class="dv">4</span>, <span class="at">U =</span> <span class="dv">8</span>, <span class="at">reg_load =</span> <span class="dv">9</span>, <span class="at">rate_per_cr =</span> <span class="dv">5000</span> <span class="sc">/</span> <span class="dv">3</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co"># Compare institutional vs instructor interest</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="fu">ol_comp</span>(inst_schedule, <span class="at">favor_institution =</span> <span class="cn">TRUE</span>)  <span class="co"># Less pay</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="fu">ol_comp</span>(inst_schedule, <span class="at">favor_institution =</span> <span class="cn">FALSE</span>) <span class="co"># More pay</span></span></code></pre></div>
+<hr />
+</div>
+<div id="see-all-instructors-in-the-schedule" class="section level2">
+<h2>👥 See All Instructors in the Schedule</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">get_unique_instructors</span>(schedule)</span></code></pre></div>
+<hr />
+</div>
+<div id="analyze-by-instructor-index" class="section level2">
+<h2>🔢 Analyze by Instructor Index</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Get summary for a specific instructor by index</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">ol_comp_byindex</span>(<span class="dv">1</span>, <span class="at">schedule_df =</span> schedule)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># With custom policy</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="fu">ol_comp_byindex</span>(<span class="dv">1</span>, <span class="at">schedule_df =</span> schedule, <span class="at">L =</span> <span class="dv">4</span>, <span class="at">U =</span> <span class="dv">9</span>, <span class="at">reg_load =</span> <span class="dv">12</span>, <span class="at">rate_per_cr =</span> <span class="dv">2500</span> <span class="sc">/</span> <span class="dv">3</span>)</span></code></pre></div>
+<hr />
+</div>
+<div id="summarize-all-instructors" class="section level2">
+<h2>📋 Summarize All Instructors</h2>
+<p>The <code>ol_comp_summary()</code> function generates a comprehensive
+compensation report for <strong>all instructors</strong> in the
+schedule.</p>
+<p><strong>Purpose:</strong></p>
+<ul>
+<li>Aggregate overload pay calculations for payroll or
+administration.</li>
+<li>Enforce consistent application of institutional policy.</li>
+</ul>
+<p><strong>Default usage:</strong></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">ol_comp_summary</span>(schedule)</span></code></pre></div>
+<p><strong>Custom policy parameters:</strong></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">ol_comp_summary</span>(schedule, <span class="at">L =</span> <span class="dv">4</span>, <span class="at">U =</span> <span class="dv">9</span>, <span class="at">reg_load =</span> <span class="dv">12</span>, <span class="at">rate_per_cr =</span> <span class="dv">2500</span> <span class="sc">/</span> <span class="dv">3</span>)</span></code></pre></div>
+<p><strong>Compare strategies for all instructors:</strong></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Favoring institution (less total pay)</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="fu">ol_comp_summary</span>(schedule, <span class="at">favor_institution =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co"># Favoring instructor (more total pay)</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="fu">ol_comp_summary</span>(schedule, <span class="at">favor_institution =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<p>The output is formatted for easy import into Excel or use in
+administrative reports.</p>
+<hr />
+</div>
+<div id="policy-logic" class="section level2">
+<h2>⚖️ Policy Logic</h2>
+<p>Default institutional policy:</p>
+<ol style="list-style-type: decimal">
+<li><p>Regular teaching load = 12 credit hours</p></li>
+<li><p>Courses with <code>ENRLD &lt; 4</code> are excluded</p></li>
+<li><p>Qualified credit hours beyond regular load are paid at
+<code>$2,500 / 3</code> per hour</p></li>
+<li><p>For <code>ENRLD &lt; 10</code>, pay is prorated:</p>
+<p><span class="math display">\[
+\text{Compensation} = \left(\frac{\text{ENRLD}}{10}\right) \times
+\text{rate per CR} \times \text{qualified CR}
+\]</span></p></li>
+<li><p>Overload hours are assigned based on the
+<code>favor_institution</code> strategy:</p>
+<ul>
+<li>If <code>favor_institution = TRUE</code>, <strong>least-enrolled
+eligible courses</strong> are counted toward overload</li>
+<li>If <code>favor_institution = FALSE</code>, <strong>most-enrolled
+eligible courses</strong> are preserved for compensation</li>
+</ul></li>
+</ol>
+<hr />
+</div>
+<div id="instructor-vs-institutional-interest-inclination-strategy" class="section level2">
+<h2>🧭 Instructor vs Institutional Interest Inclination Strategy</h2>
+<p>You can specify how regular teaching load is assigned when
+determining overload pay:</p>
+<ul>
+<li><p><strong><code>favor_institution = TRUE</code></strong> →
+<em>Favor institutional interest</em> → Assign <strong>high-enrollment
+courses</strong> to regular load first → Leaves <strong>low-enrollment
+courses</strong> for compensation → Results in <strong>less total
+pay</strong></p></li>
+<li><p><strong><code>favor_institution = FALSE</code></strong> →
+<em>Favor instructor interest</em> → Assign <strong>low-enrollment
+courses</strong> to regular load first → Leaves <strong>high-enrollment
+courses</strong> for compensation → Results in <strong>more total
+pay</strong></p></li>
+</ul>
+<p>This option is supported in both <code>ol_comp()</code> and
+<code>ol_comp_summary()</code> functions.</p>
+<hr />
+</div>
+<div id="questions" class="section level2">
+<h2>📨 Questions?</h2>
+<p>For questions or feedback, please open a <a href="https://github.com/dawit3000/catool/issues">GitHub issue</a> or
+contact <strong>Dawit Aberra</strong> at <a href="mailto:aberrad@fvsu.edu">aberrad@fvsu.edu</a>.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

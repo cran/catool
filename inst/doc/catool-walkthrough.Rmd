@@ -1,0 +1,188 @@
+---
+title: "catool: Walkthrough"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{catool: Walkthrough}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+library(catool)
+library(dplyr)
+```
+
+## 🔍 Introduction
+
+This vignette demonstrates how to use the `catool` R package to calculate fair and transparent overload compensation for college instructors, based on institutional course schedules and compensation policies.
+
+The package supports analysis for both individual instructors and full teaching schedules using well-defined eligibility and proration rules based on enrollment and credit hour thresholds.
+
+---
+
+## 🏫 Prepare Your Schedule Data
+
+To use `catool`, your schedule data must include at minimum:
+
+* `INSTRUCTOR`: Instructor name (e.g., "Baker, Danielle")
+* `ENRLD`: Enrollment count for each course
+* `HRS`: Credit hours for each course
+
+📂 **Sample input**:
+
+The [`schedule.csv`](https://raw.githubusercontent.com/dawit3000/catool/master/inst/extdata/schedule.csv) file from the "inst/extdata" folder provides a realistic example of course schedule data used by the package. It includes columns such as `SUBJ`, `CRN`, `INSTRUCTOR`,`DEPARTMENT` and `COLLEGE` fields.
+
+```{r, echo=TRUE, results="hide", eval = FALSE}
+schedule <- data.frame(
+  INSTRUCTOR = c("Lalau-Hitchcock, Diksha", "Lalau-Hitchcock, Diksha", "Brown, Cecily"),
+  ENRLD = c(12, 7, 4),
+  HRS = c(3, 3, 3),
+  stringsAsFactors = FALSE
+)
+```
+
+If you have extended data including subject codes, departments, colleges, and programs, make sure those columns are labeled as `SUBJ`, `DEPARTMENT`, `COLLEGE`, and `PROGRAM` respectively.
+
+---
+
+## 🔎 Filter Schedules with `filter_schedule()`
+
+You can filter a schedule using subject codes, instructor names, department, college, or program using pattern matching.
+
+```{r, echo=TRUE, results="hide", warning=FALSE, eval = FALSE}
+# Filter by subject pattern
+filter_schedule(schedule, subject_pattern = "MATH|CSCI")
+
+# Filter by instructor
+filter_schedule(schedule, instructor_pattern = "Armbruster|al-Abdul")
+
+# Filter by department
+filter_schedule(schedule, department_pattern = "Business Administration")
+
+# Filter by college
+filter_schedule(schedule, college_pattern = "arts")
+
+# Filter by program
+filter_schedule(schedule, program_pattern = "computation")
+```
+
+---
+
+## 👤 Analyze One Instructor
+
+```{r, echo=TRUE, results="hide", eval = FALSE}
+# Filter by instructor name (case-insensitive)
+inst_schedule <- get_instructor_schedule("Lalau-Hitchcock", schedule)
+
+# Calculate overload compensation using default policy
+ol_comp(inst_schedule)
+
+# You can also apply custom policy parameters
+ol_comp(inst_schedule, L = 4, U = 8, reg_load = 9, rate_per_cr = 5000 / 3)
+
+# Compare institutional vs instructor interest
+ol_comp(inst_schedule, favor_institution = TRUE)  # Less pay
+ol_comp(inst_schedule, favor_institution = FALSE) # More pay
+```
+
+---
+
+## 👥 See All Instructors in the Schedule
+
+```{r, echo=TRUE, results="hide", eval = FALSE}
+get_unique_instructors(schedule)
+```
+
+---
+
+## 🔢 Analyze by Instructor Index
+
+```{r, echo=TRUE, results="hide", eval = FALSE}
+# Get summary for a specific instructor by index
+ol_comp_byindex(1, schedule_df = schedule)
+
+# With custom policy
+ol_comp_byindex(1, schedule_df = schedule, L = 4, U = 9, reg_load = 12, rate_per_cr = 2500 / 3)
+```
+
+---
+
+## 📋 Summarize All Instructors
+
+The `ol_comp_summary()` function generates a comprehensive compensation report for **all instructors** in the schedule.
+
+**Purpose:**
+
+* Aggregate overload pay calculations for payroll or administration.
+* Enforce consistent application of institutional policy.
+
+**Default usage:**
+
+```{r, echo=TRUE, eval = FALSE}
+ol_comp_summary(schedule)
+```
+
+**Custom policy parameters:**
+
+```{r, echo=TRUE, eval = FALSE}
+ol_comp_summary(schedule, L = 4, U = 9, reg_load = 12, rate_per_cr = 2500 / 3)
+```
+
+**Compare strategies for all instructors:**
+
+```{r, echo=TRUE, eval = FALSE}
+# Favoring institution (less total pay)
+ol_comp_summary(schedule, favor_institution = TRUE)
+
+# Favoring instructor (more total pay)
+ol_comp_summary(schedule, favor_institution = FALSE)
+```
+
+The output is formatted for easy import into Excel or use in administrative reports.
+
+---
+
+## ⚖️ Policy Logic
+
+Default institutional policy:
+
+1. Regular teaching load = 12 credit hours
+2. Courses with `ENRLD < 4` are excluded
+3. Qualified credit hours beyond regular load are paid at `$2,500 / 3` per hour
+4. For `ENRLD < 10`, pay is prorated:
+
+   $$
+   \text{Compensation} = \left(\frac{\text{ENRLD}}{10}\right) \times \text{rate per CR} \times \text{qualified CR}
+   $$
+5. Overload hours are assigned based on the `favor_institution` strategy:
+
+   * If `favor_institution = TRUE`, **least-enrolled eligible courses** are counted toward overload
+   * If `favor_institution = FALSE`, **most-enrolled eligible courses** are preserved for compensation
+
+---
+
+## 🧭 Instructor vs Institutional Interest Inclination Strategy
+
+You can specify how regular teaching load is assigned when determining overload pay:
+
+* **`favor_institution = TRUE`** → *Favor institutional interest*
+  → Assign **high-enrollment courses** to regular load first
+  → Leaves **low-enrollment courses** for compensation
+  → Results in **less total pay**
+
+* **`favor_institution = FALSE`** → *Favor instructor interest*
+  → Assign **low-enrollment courses** to regular load first
+  → Leaves **high-enrollment courses** for compensation
+  → Results in **more total pay**
+
+This option is supported in both `ol_comp()` and `ol_comp_summary()` functions.
+
+---
+
+## 📨 Questions?
+
+For questions or feedback, please open a [GitHub issue](https://github.com/dawit3000/catool/issues)
+or contact **Dawit Aberra** at [aberrad@fvsu.edu](mailto:aberrad@fvsu.edu).
