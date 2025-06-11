@@ -1,7 +1,8 @@
 Package: catool
 Type: Package
 Title: Compensation Analysis Tool for Instructor Overload Pay
-Version: 1.0.0
+Version: 1.0.1
+Date: 2025-06-09
 Authors@R: 
     person("Dawit", "Aberra", email = "dawit3000@hotmail.com", role = c("aut", "cre"))
 Description: Calculates equitable overload compensation for college instructors
@@ -24,8 +25,8 @@ URL: https://github.com/dawit3000/catool
 BugReports: https://github.com/dawit3000/catool/issues
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2025-06-04 20:44:58 UTC; dawit
+Packaged: 2025-06-10 04:47:48 UTC; dawit
 Author: Dawit Aberra [aut, cre]
 Maintainer: Dawit Aberra <dawit3000@hotmail.com>
 Repository: CRAN
-Date/Publication: 2025-06-06 13:20:02 UTC
+Date/Publication: 2025-06-11 11:40:01 UTC
